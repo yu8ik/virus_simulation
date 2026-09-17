@@ -1,0 +1,6 @@
+(()=>{'use strict';const edits=JSON.parse(document.querySelector('#game-text-overrides').textContent);const originals=new WeakMap();
+ function textNodes(){const result=[];for(const root of document.querySelectorAll('#computer,.outside')){const walk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;while(node=walk.nextNode()){if((!node.textContent.trim()&&!originals.has(node))||node.parentElement.closest('script,style,svg'))continue;result.push(node);}}return result;}
+ function apply(){observer.disconnect();for(const node of textNodes()){let record=originals.get(node);if(!record||node.textContent!==record.applied)record={original:node.textContent,applied:node.textContent};const next=Object.hasOwn(edits,record.original)?edits[record.original]:record.original;if(node.textContent!==next)node.textContent=next;record.applied=next;originals.set(node,record);}observer.observe(document.querySelector('#computer'),{subtree:true,childList:true,characterData:true});}
+ const observer=new MutationObserver(apply);apply();
+
+})();
